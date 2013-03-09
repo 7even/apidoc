@@ -1,0 +1,6 @@
+POST /login
+{ "email": "a@b.ru", "password": "secret" }
+< 200
+
+DELETE /logout
+< 200
