@@ -7,3 +7,4 @@ Mongoid.load!('config/mongoid.yml')
 
 require 'blueprint'
 require 'request'
+require 'context'

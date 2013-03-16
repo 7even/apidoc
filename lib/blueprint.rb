@@ -1,5 +1,6 @@
 class Blueprint
   include Mongoid::Document
+  
   embeds_many :requests
 end
 

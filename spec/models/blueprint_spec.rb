@@ -7,7 +7,7 @@ describe Blueprint do
       @specification = File.read(specification_path)
     end
     
-    it "should create a new Blueprint from a string" do
+    it "creates a new Blueprint from a string" do
       pending
       blueprint = Blueprint.parse(@specification)
       blueprint.should be_a(Blueprint)
