@@ -1,0 +1,7 @@
+GET /users/:id
+< 200
+{
+  "id": #{id},
+  "name": "John Smith",
+  "email": "john.smith@example.com"
+}
