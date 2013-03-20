@@ -7,6 +7,7 @@ gem 'sinatra-subdomain'
 gem 'mongoid'
 gem 'rly'
 
+gem 'rake'
 gem 'rspec'
 
 gem 'pry'

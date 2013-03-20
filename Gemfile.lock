@@ -28,6 +28,7 @@ GEM
     rack (1.5.2)
     rack-protection (1.4.0)
       rack
+    rake (10.0.3)
     rly (0.2.3)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
@@ -54,6 +55,7 @@ DEPENDENCIES
   awesome_print
   mongoid
   pry
+  rake
   rly
   rspec
   sinatra
