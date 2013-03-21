@@ -26,4 +26,11 @@ describe Parser do
     result[2].url.should == '/another_url'
     result[2].contexts.first.response_code.should == 401
   end
+  
+  it "parses requests without contexts" do
+    source = 'GET /url'
+    
+    requests = Parser.new.parse(source)
+    requests.first.should_not have_contexts
+  end
 end

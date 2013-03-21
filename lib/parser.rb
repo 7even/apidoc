@@ -27,12 +27,16 @@ class Parser < Rly::Yacc
     requests.value = requests_array.map(&:value).flatten
   end
   
-  rule 'request : VERB URL contexts' do |request, verb, url, contexts|
+  rule 'request : VERB URL optional_contexts' do |request, verb, url, optional_contexts|
     request.value = Request.new do |r|
       r.verb     = verb.value
       r.url      = url.value
-      r.contexts = contexts.value
+      r.contexts = optional_contexts.value unless optional_contexts.value.nil?
     end
+  end
+  
+  rule 'optional_contexts : contexts | empty' do |optional_contexts, contexts|
+    optional_contexts.value = contexts.value
   end
   
   rule 'contexts : contexts context | context' do |contexts, *contexts_array|
@@ -54,6 +58,8 @@ class Parser < Rly::Yacc
   rule 'response_code : "<" NUMBER' do |response_code, _, number|
     response_code.value = { response_code: number.value }
   end
+  
+  rule('empty :') { }
   
   rule 'json : "{" "}"' do |json, *|
     # TODO: working json pattern
