@@ -4,15 +4,20 @@ class Parser < Rly::Yacc
     token :URL, /\/[A-Za-z0-9\-_\/.]+/
     literals '<{}'
     
-    ignore " \t\n"
+    ignore " \t"
     
     token :NUMBER, /\d+/ do |t|
       t.value = t.value.to_i
       t
     end
     
+    token /\n+/ do |t|
+      t.lexer.lineno += t.value.count("\n")
+      t
+    end
+    
     on_error do |t|
-      puts "Illegal character #{t.value}"
+      puts "Illegal character #{t.value.inspect} at line #{t.lexer.lineno + 1}"
       t.lexer.pos += 1
       nil
     end
