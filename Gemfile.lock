@@ -20,6 +20,7 @@ GEM
       tzinfo (~> 0.3.22)
     moped (1.4.3)
     multi_json (1.7.1)
+    oj (2.0.10)
     origin (1.0.11)
     pry (0.9.12)
       coderay (~> 1.0.5)
@@ -54,6 +55,7 @@ PLATFORMS
 DEPENDENCIES
   awesome_print
   mongoid
+  oj
   pry
   rake
   rly

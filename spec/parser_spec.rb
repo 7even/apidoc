@@ -33,4 +33,12 @@ describe Parser do
     requests = Parser.new.parse(source)
     requests.first.should_not have_contexts
   end
+  
+  it "parses requests with json request body" do
+    path = File.expand_path('../fixtures/simple', __FILE__)
+    source = File.read(path)
+    
+    requests = Parser.new.parse(source)
+    requests.first.contexts.first.request_body.should == Oj.dump(email: 'a@b.ru', password: 'secret')
+  end
 end

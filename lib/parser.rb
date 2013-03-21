@@ -1,15 +1,20 @@
 class Parser < Rly::Yacc
   lexer do
-    token :VERB, /GET|POST|PUT|PATCH|DELETE/
-    token :URL, /\/[A-Za-z0-9\-_\/.]+/
-    literals '<{}'
-    
-    ignore " \t"
-    
     token :NUMBER, /\d+/ do |t|
       t.value = t.value.to_i
       t
     end
+    
+    token :VERB,  /GET|POST|PUT|PATCH|DELETE/
+    token :TRUE,  /true/
+    token :FALSE, /false/
+    token :NULL,  /null/
+    
+    token :DOUBLE_QUOTE, /"/
+    token :STRING, /[A-Za-z0-9\-_\/.@]+/
+    
+    literals '<{}[],:'
+    ignore " \t"
     
     token /\n+/ do |t|
       t.lexer.lineno += t.value.count("\n")
@@ -27,7 +32,7 @@ class Parser < Rly::Yacc
     requests.value = requests_array.map(&:value).flatten
   end
   
-  rule 'request : VERB URL optional_contexts' do |request, verb, url, optional_contexts|
+  rule 'request : VERB STRING optional_contexts' do |request, verb, url, optional_contexts|
     request.value = Request.new do |r|
       r.verb     = verb.value
       r.url      = url.value
@@ -61,8 +66,43 @@ class Parser < Rly::Yacc
   
   rule('empty :') { }
   
-  rule 'json : "{" "}"' do |json, *|
-    # TODO: working json pattern
-    json.value = ''
+  rule 'json : json_object | json_array' do |json, object_or_array|
+    json.value = Oj.dump(object_or_array.value)
+  end
+  
+  rule 'json_object : "{" json_key_value_pairs "}"' do |json_object, _, json_key_value_pairs, _|
+    json_object.value = json_key_value_pairs.value
+  end
+  
+  rule 'json_key_value_pairs : json_key_value_pairs "," json_key_value_pair' do |json_key_value_pairs, key_value_pairs, _, key_value_pair|
+    json_key_value_pairs.value = key_value_pairs.value.merge(key_value_pair.value)
+  end
+  
+  rule 'json_key_value_pairs : json_key_value_pair' do |json_key_value_pairs, key_value_pair|
+    json_key_value_pairs.value = key_value_pair.value
+  end
+  
+  rule 'json_key_value_pair : json_string ":" json_value' do |json_key_value_pair, json_string, _, json_value|
+    json_key_value_pair.value = { json_string.value => json_value.value }
+  end
+  
+  rule 'json_array : "[" json_values "]"' do |json_array, _, json_values, _|
+    json_array.value = json_values.value
+  end
+  
+  rule 'json_values : json_values "," json_value' do |json_values, values, _, value|
+    json_values.value = values.value << value.value
+  end
+  
+  rule 'json_values : json_value' do |json_values, value|
+    json_values.value = [value.value]
+  end
+  
+  rule 'json_value : json_string | NUMBER | json_object | json_array | TRUE | FALSE | NULL' do |json_value, value|
+    json_value.value = value.value
+  end
+  
+  rule 'json_string : DOUBLE_QUOTE STRING DOUBLE_QUOTE' do |json_string, _, string, _|
+    json_string.value = string.value
   end
 end
