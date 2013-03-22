@@ -10,8 +10,12 @@ class Parser < Rly::Yacc
     token :FALSE, /false/
     token :NULL,  /null/
     
-    token :DOUBLE_QUOTE, /"/
-    token :STRING, /[A-Za-z0-9\-_\/.@]+/
+    token :JSON_STRING, /"([^"\\]|\\["\\\/nbfnrt]|\\u\d{4})+"/ do |t|
+      t.value = t.value[1..-2] # cut the quotes off
+      # TODO: replace \n with a newline, \r with a carriage return etc
+      t
+    end
+    token :URL, /\/[A-Za-z0-9\-_\/.@]+/
     
     literals '<{}[],:'
     ignore " \t"
@@ -32,7 +36,7 @@ class Parser < Rly::Yacc
     requests.value = requests_array.map(&:value).flatten
   end
   
-  rule 'request : VERB STRING optional_contexts' do |request, verb, url, optional_contexts|
+  rule 'request : VERB URL optional_contexts' do |request, verb, url, optional_contexts|
     request.value = Request.new do |r|
       r.verb     = verb.value
       r.url      = url.value
@@ -102,7 +106,7 @@ class Parser < Rly::Yacc
     json_value.value = value.value
   end
   
-  rule 'json_string : DOUBLE_QUOTE STRING DOUBLE_QUOTE' do |json_string, _, string, _|
+  rule 'json_string : JSON_STRING' do |json_string, string|
     json_string.value = string.value
   end
 end
