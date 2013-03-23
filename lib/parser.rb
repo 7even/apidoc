@@ -32,6 +32,10 @@ class Parser < Rly::Yacc
     end
   end
   
+  rule 'blueprint : requests' do |blueprint, requests|
+    blueprint.value = Blueprint.new(requests: requests.value)
+  end
+  
   rule 'requests : requests request | request' do |requests, *requests_array|
     requests.value = requests_array.map(&:value).flatten
   end
