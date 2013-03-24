@@ -1,6 +1,21 @@
 POST /login
-{ "email": "a@b.ru", "password": "secret" }
+> { "email": "a@b.ru", "password": "secret" }
 < 200
 
 DELETE /logout
 < 200
+
+GET /users
+> param1=value1&param2=value2
+> X-My-Token: token
+< 200
+< [
+  {
+    "name": "Jonh Smith",
+    "email": "john.smith@example.com"
+  },
+  {
+    "name": "Vasya Pupkin",
+    "email": "vasya.pupkin@example.ru"
+  }
+]

@@ -1,6 +1,10 @@
 require 'spec_helper'
 
 describe Parser do
+  before(:each) do
+    @parser = Parser.new
+  end
+  
   it "parses basic requests" do
     source = <<-EOF
       GET /url
@@ -11,7 +15,8 @@ describe Parser do
       < 401
     EOF
     
-    blueprint = Parser.new.parse(source)
+    blueprint = @parser.parse(source)
+    blueprint.should_not be_nil
     blueprint.should have(3).requests
     
     blueprint.requests[0].verb.should == 'GET'
@@ -30,7 +35,8 @@ describe Parser do
   it "parses requests without contexts" do
     source = 'GET /url'
     
-    blueprint = Parser.new.parse(source)
+    blueprint = @parser.parse(source)
+    blueprint.should_not be_nil
     blueprint.requests.first.should_not have_contexts
   end
   
@@ -38,7 +44,34 @@ describe Parser do
     path = File.expand_path('../fixtures/simple', __FILE__)
     source = File.read(path)
     
-    blueprint = Parser.new.parse(source)
+    blueprint = @parser.parse(source)
+    blueprint.should_not be_nil
+    blueprint.should have(3).requests
     blueprint.requests.first.contexts.first.request_body.should == Oj.dump(email: 'a@b.ru', password: 'secret')
+  end
+  
+  it "parses contexts with multiple headers" do
+    source = <<-EOF
+      GET /users
+      > X-First-Header: abc
+      > X-Second-Header: def
+      < X-Third-Header: ghi
+      < X-Fourth-Header: jkl
+      < X-Fifth-Header: mno
+    EOF
+    
+    blueprint = @parser.parse(source)
+    blueprint.should_not be_nil
+    blueprint.requests.first.contexts.first.request_headers.count.should == 2
+    blueprint.requests.first.contexts.first.response_headers.count.should == 3
+  end
+  
+  it "parses requests with multiple contexts" do
+    path = File.expand_path('../fixtures/contexts', __FILE__)
+    source = File.read(path)
+    
+    blueprint = @parser.parse(source)
+    blueprint.should_not be_nil
+    blueprint.requests.first.should have(2).contexts
   end
 end

@@ -1,7 +1,9 @@
-GET /users/:id
+GET /users/1
+< 403
+> X-Auth-Token: token
 < 200
-{
-  "id": #{id},
+< {
+  "id": 1,
   "name": "John Smith",
   "email": "john.smith@example.com"
 }

@@ -1,12 +1,12 @@
 class Context
   include Mongoid::Document
   
-  field :request_headers
-  field :request_query_string
-  field :request_body
-  field :response_code
-  field :response_headers
-  field :response_body
+  field :request_query_string, type: String
+  field :request_headers,      type: Hash
+  field :request_body,         type: String
+  field :response_code,        type: Integer
+  field :response_headers,     type: Hash
+  field :response_body,        type: String
   
   embedded_in :request
 end

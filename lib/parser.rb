@@ -15,9 +15,12 @@ class Parser < Rly::Yacc
       # TODO: replace \n with a newline, \r with a carriage return etc
       t
     end
-    token :URL, /\/[A-Za-z0-9\-_\/.@]+/
     
-    literals '<{}[],:'
+    token :URL, /\/[A-Za-z0-9\-_\/.@]+/
+    token :QUERY_STRING, /[A-Za-z0-9@.]+=[A-Za-z0-9@.]+(&[A-Za-z0-9@.]+=[A-Za-z0-9@.]+)*/ # param1=value1&param2=value2
+    token :STRING, /[A-Za-z0-9\-_\/.@]+/
+    
+    literals '><{}[],:'
     ignore " \t"
     
     token /\n+/ do |t|
@@ -40,36 +43,87 @@ class Parser < Rly::Yacc
     requests.value = requests_array.map(&:value).flatten
   end
   
-  rule 'request : VERB URL optional_contexts' do |request, verb, url, optional_contexts|
+  rule 'request : VERB URL contexts' do |request, verb, url, contexts|
     request.value = Request.new do |r|
       r.verb     = verb.value
       r.url      = url.value
-      r.contexts = optional_contexts.value unless optional_contexts.value.nil?
+      r.contexts = contexts.value
     end
   end
   
-  rule 'optional_contexts : contexts | empty' do |optional_contexts, contexts|
-    optional_contexts.value = contexts.value
+  rule 'contexts : contexts context | context | empty' do |contexts, *contexts_array|
+    contexts.value = contexts_array.map(&:value).flatten
   end
   
-  rule 'contexts : contexts context | context' do |contexts, *contexts_array|
-    contexts.value = contexts_array.map { |c| Context.new(c.value) }
+  rule 'context : request_context response_context' do |context, request_context, response_context|
+    context_attributes = [request_context, response_context].map(&:value).compact.inject(:merge)
+    context.value = Context.new(context_attributes)
   end
   
-  rule 'context : context context_part | context_part' do |context, *context_parts|
-    context.value = context_parts.map(&:value).inject(:merge)
+  rule 'request_context : request_query_string request_headers request_body
+                        | request_query_string request_headers
+                        | request_query_string request_body
+                        | request_headers request_body
+                        | request_query_string
+                        | request_headers
+                        | request_body
+                        | empty' do |request_context, *request_context_parts|
+    request_context.value = request_context_parts.map(&:value).compact.inject(:merge)
   end
   
-  rule 'context_part : request_body | response_code' do |context_part, part|
-    context_part.value = part.value
+  rule 'response_context : response_code response_headers response_body
+                         | response_code response_headers
+                         | response_code response_body
+                         | response_headers response_body
+                         | response_code
+                         | response_headers
+                         | response_body
+                         | empty' do |response_context, *response_context_parts|
+    response_context.value = response_context_parts.map(&:value).compact.inject(:merge)
   end
   
-  rule 'request_body : json' do |request_body, json|
+  rule 'request_query_string : ">" QUERY_STRING' do |request_query_string, _, query_string|
+    request_query_string.value = { request_query_string: query_string.value }
+  end
+  
+  rule 'request_headers : request_headers_array' do |request_headers, request_headers_array|
+    request_headers.value = { request_headers: request_headers_array.value }
+  end
+  
+  rule 'request_headers_array : request_headers_array request_header | request_header' do |request_headers_array, *headers_array|
+    request_headers_array.value = headers_array.map(&:value).inject(:merge)
+  end
+  
+  rule 'request_header : ">" header' do |request_header, _, header|
+    request_header.value = header.value
+  end
+  
+  rule 'request_body : ">" json' do |request_body, _, json|
     request_body.value = { request_body: json.value }
   end
   
   rule 'response_code : "<" NUMBER' do |response_code, _, number|
     response_code.value = { response_code: number.value }
+  end
+  
+  rule 'response_headers : response_headers_array' do |response_headers, response_headers_array|
+    response_headers.value = { response_headers: response_headers_array.value }
+  end
+  
+  rule 'response_headers_array : response_headers_array response_header | response_header' do |response_headers_array, *headers_array|
+    response_headers_array.value = headers_array.map(&:value).inject(:merge)
+  end
+  
+  rule 'response_header : "<" header' do |response_header, _, header|
+    response_header.value = header.value
+  end
+  
+  rule 'response_body : "<" json' do |response_body, _, json|
+    response_body.value = { response_body: json.value }
+  end
+  
+  rule 'header : STRING ":" STRING' do |header, header_name, _, header_value|
+    header.value = { header_name.value => header_value.value }
   end
   
   rule('empty :') { }
