@@ -6,6 +6,7 @@ gem 'sinatra'
 gem 'sinatra-subdomain'
 gem 'mongoid'
 gem 'rly'
+gem 'slim'
 gem 'oj'
 
 gem 'rake'

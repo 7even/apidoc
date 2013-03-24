@@ -7,5 +7,12 @@ subdomain :api do
 end
 
 get '/' do
-  'Docs'
+  # TODO: distinguish the real current blueprint from the old
+  @current_blueprint = Blueprint.last
+  slim :index
+end
+
+post '/' do
+  Blueprint.parse(params[:specification])
+  redirect '/'
 end
