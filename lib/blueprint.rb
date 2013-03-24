@@ -1,15 +1,19 @@
 class Blueprint
   include Mongoid::Document
   
+  field :specification, type: String
+  
   embeds_many :requests
   
   def self.parse(specification)
     blueprint = Parser.new.parse(specification)
+    blueprint.specification = specification
     blueprint.tap(&:save)
   end
 end
 
 # blueprint:
+#   specification
 #   request:
 #     verb
 #     url
