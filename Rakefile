@@ -1,11 +1,8 @@
 desc 'Launch the app console'
 task :console do
   require_relative './init'
-  
-  # a helper for prettyprinting mongoid objects in the console
-  def jp(object)
-    Oj.load(object.to_json)
-  end
+  require_relative './lib/console_helpers'
+  include ConsoleHelpers
   
   Pry.start
 end
