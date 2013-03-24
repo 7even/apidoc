@@ -2,6 +2,11 @@ class Blueprint
   include Mongoid::Document
   
   embeds_many :requests
+  
+  def self.parse(specification)
+    blueprint = Parser.new.parse(specification)
+    blueprint.tap(&:save)
+  end
 end
 
 # blueprint:

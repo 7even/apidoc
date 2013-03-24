@@ -7,10 +7,12 @@ describe Blueprint do
       @specification = File.read(specification_path)
     end
     
-    it "creates a new Blueprint from a string" do
-      pending
-      blueprint = Blueprint.parse(@specification)
-      blueprint.should be_a(Blueprint)
+    it "parses the specification with Parser and saves the result" do
+      blueprint = stub("Blueprint built by parser")
+      Parser.any_instance.should_receive(:parse).with(@specification).and_return(blueprint)
+      blueprint.should_receive(:save)
+      
+      Blueprint.parse(@specification).should == blueprint
     end
   end
 end
