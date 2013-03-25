@@ -21,7 +21,7 @@ class Parser < Rly::Yacc
     token :STRING, /[A-Za-z0-9\-_\/.@]+/
     
     literals '><{}[],:'
-    ignore " \t"
+    ignore " \t\r"
     
     token /\n+/ do |t|
       t.lexer.lineno += t.value.count("\n")
