@@ -9,6 +9,8 @@ gem 'rly'
 gem 'slim'
 gem 'oj'
 
+gem 'puma'
+
 gem 'rake'
 gem 'rspec'
 
