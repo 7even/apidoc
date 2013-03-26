@@ -1,7 +1,7 @@
 require 'bundler'
 Bundler.require
 
-set :environment, ENV['RACK_ENV'].to_sym
+set :environment, ENV['RACK_ENV'].to_sym if ENV['RACK_ENV']
 disable :run, :reload
 
 AwesomePrint.pry!
