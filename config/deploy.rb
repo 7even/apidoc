@@ -18,7 +18,7 @@ set :branch, 'master'
 
 # Manually create these paths in shared/ (eg: shared/config/database.yml) in your server.
 # They will be linked in the 'deploy:link_shared_paths' step.
-set :shared_paths, ['config/mongoid.yml', 'log']
+set :shared_paths, ['config/mongoid.yml', 'log', 'tmp']
 
 # This task is the environment that is loaded for most commands, such as
 # `mina deploy` or `mina rake`.
@@ -30,8 +30,11 @@ end
 # For Rails apps, we'll make some of the shared paths that are shared between
 # all releases.
 task :setup => :environment do
-  # queue! %[mkdir -p "#{deploy_to}/shared/log"]
-  # queue! %[chmod g+rx,u+rwx "#{deploy_to}/shared/log"]
+  queue! %[mkdir -p "#{deploy_to}/shared/log"]
+  queue! %[chmod g+rx,u+rwx "#{deploy_to}/shared/log"]
+  
+  queue! %[mkdir -p "#{deploy_to}/shared/tmp"]
+  queue! %[chmod g+rx,u+rwx "#{deploy_to}/shared/tmp"]
   
   queue! %[mkdir -p "#{deploy_to}/shared/config"]
   queue! %[chmod g+rx,u+rwx "#{deploy_to}/shared/config"]
@@ -49,8 +52,7 @@ task :deploy => :environment do
     invoke :'bundle:install'
     
     to :launch do
-      queue 'mkdir -p tmp'
-      queue 'touch tmp/restart.txt'
+      queue 'bin/pumactl -S tmp/puma.state restart'
     end
   end
 end
