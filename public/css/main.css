@@ -1,3 +1,5 @@
 textarea.spec {
   width: 100%;
+  font-family: Monaco, "Liberation Mono", Courier, monospace;
+  font-size: 12px;
 }
