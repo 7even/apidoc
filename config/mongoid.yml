@@ -10,3 +10,9 @@ test:
       database: apidoc_test
       hosts:
         - localhost:27017
+production:
+  sessions:
+    default:
+      database: apidoc
+      hosts:
+        - localhost:27017
