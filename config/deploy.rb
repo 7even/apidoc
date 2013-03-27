@@ -52,7 +52,7 @@ task :deploy => :environment do
     invoke :'bundle:install'
     
     to :launch do
-      queue 'bin/pumactl -S tmp/puma.state restart'
+      queue! "bundle exec pumactl -S #{deploy_to}/shared/tmp/puma.state restart"
     end
   end
 end
