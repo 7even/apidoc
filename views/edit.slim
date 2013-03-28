@@ -1,5 +1,11 @@
 h2 API Specification
 
+ul.nav.nav-pills
+  li
+    a href="/" Read
+  li.active
+    a href="/edit" Edit
+
 form action="/" method="post"
   textarea.spec name="specification" rows="30" placeholder="GET /url"
     = @current_blueprint.specification if @current_blueprint
