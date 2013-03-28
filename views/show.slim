@@ -6,4 +6,5 @@ ul.nav.nav-pills
   li
     a href="/edit" Edit
 
-pre = @current_blueprint.specification
+- @current_blueprint.requests.each do |request|
+  == slim :request, locals: { request: request }

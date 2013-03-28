@@ -1,0 +1,6 @@
+.well
+  blockquote
+    p = request.caption
+  
+  - request.contexts.each do |context|
+    == slim :context, locals: { context: context }

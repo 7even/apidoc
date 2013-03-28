@@ -1,0 +1,29 @@
+- if context.has_request_params?
+  p
+    span.label.label-info Request
+  
+  pre
+    - if context.has_request_query_string?
+      = "?#{context.request_query_string}\n"
+    
+    - if context.has_request_headers?
+      - context.request_headers.each do |header_name, header_value|
+        = "#{header_name}: #{header_value}\n"
+    
+    - if context.has_request_body?
+      = "#{context.request_body}\n"
+
+- if context.has_response_params?
+  p
+    span.label.label-success Response
+  
+  pre
+    - if context.has_response_code?
+      = "#{context.response_code}\n"
+    
+    - if context.has_response_headers?
+      - context.response_headers.each do |header_name, header_value|
+        = "#{header_name}: #{header_value}\n"
+    
+    - if context.has_response_body?
+      = "#{context.response_body}\n"

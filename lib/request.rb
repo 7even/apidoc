@@ -6,4 +6,8 @@ class Request
   
   embedded_in :blueprint
   embeds_many :contexts
+  
+  def caption
+    "#{verb} #{url}" # GET /users
+  end
 end
