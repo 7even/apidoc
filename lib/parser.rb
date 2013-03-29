@@ -16,7 +16,7 @@ class Parser < Rly::Yacc
       t
     end
     
-    token :URL, /\/[A-Za-z0-9\-_\/.@]+/
+    token :URL, /\/[A-Za-z0-9\-_\/.@:]+/
     token :QUERY_STRING, /[A-Za-z0-9@.]+=[A-Za-z0-9@.]+(&[A-Za-z0-9@.]+=[A-Za-z0-9@.]+)*/ # param1=value1&param2=value2
     token :STRING, /[A-Za-z0-9\-_\/.@]+/
     
