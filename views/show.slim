@@ -5,6 +5,6 @@ ul.nav.nav-pills
     a href="/" Read
   li
     a href="/edit" Edit
-
-- @current_blueprint.requests.each do |request|
-  == slim :request, locals: { request: request }
+- unless @current_blueprint.nil?
+  - @current_blueprint.requests.each do |request|
+    == slim :request, locals: { request: request }
