@@ -20,7 +20,7 @@ class Parser < Rly::Yacc
     token :QUERY_STRING, /[A-Za-z0-9@.]+=[A-Za-z0-9@.]+(&[A-Za-z0-9@.]+=[A-Za-z0-9@.]+)*/ # param1=value1&param2=value2
     token :STRING, /[A-Za-z0-9\-_\/.@]+/
     
-    literals '><{}[],:'
+    literals '><{}[],:#'
     ignore " \t\r"
     
     token /\n+/ do |t|
@@ -164,7 +164,11 @@ class Parser < Rly::Yacc
     json_value.value = value.value
   end
   
-  rule 'json_string : JSON_STRING' do |json_string, string|
+  rule 'json_string : JSON_STRING | json_variable' do |json_string, string|
     json_string.value = string.value
+  end
+  
+  rule 'json_variable : "#" "{" STRING "}"' do |json_variable, _, _, variable_name, _|
+    json_variable.value = '#{' + variable_name.value + '}'
   end
 end

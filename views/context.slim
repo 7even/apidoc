@@ -11,7 +11,7 @@
         = "#{header_name}: #{header_value}\n"
     
     - if context.has_request_body?
-      = "#{context.request_body}\n"
+      = "#{BodyProcessor.process_for_rendering(context.request_body)}\n"
 
 - if context.has_response_params?
   p
@@ -26,4 +26,4 @@
         = "#{header_name}: #{header_value}\n"
     
     - if context.has_response_body?
-      = "#{context.response_body}\n"
+      = "#{BodyProcessor.process_for_rendering(context.response_body)}\n"

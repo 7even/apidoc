@@ -11,11 +11,21 @@ GET /users
 < 200
 < [
   {
+    "id": 1,
     "name": "Jonh Smith",
     "email": "john.smith@example.com"
   },
   {
+    "id": 2,
     "name": "Vasya Pupkin",
     "email": "vasya.pupkin@example.ru"
   }
 ]
+
+GET /users/:id
+< 200
+< {
+  "id": #{id},
+  "name": "Jonh Smith",
+  "email": "john.smith@example.com"
+}
