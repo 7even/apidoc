@@ -8,12 +8,12 @@ end
 
 get '/' do
   # TODO: distinguish the real current blueprint from the old
-  @current_blueprint = Blueprint.last
+  @current_blueprint = Blueprint.current
   slim :show
 end
 
 get '/edit' do
-  @current_blueprint = Blueprint.last
+  @current_blueprint = Blueprint.current
   slim :edit
 end
 

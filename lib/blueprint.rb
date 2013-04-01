@@ -5,10 +5,17 @@ class Blueprint
   
   embeds_many :requests
   
-  def self.parse(specification)
-    blueprint = Parser.new.parse(specification)
-    blueprint.specification = specification
-    blueprint.tap(&:save)
+  class << self
+    def parse(specification)
+      blueprint = Parser.new.parse(specification)
+      blueprint.specification = specification
+      blueprint.tap(&:save)
+    end
+    
+    # актуальная спецификация
+    def current
+      self.last
+    end
   end
 end
 
