@@ -11,6 +11,7 @@ Mongoid.load!('config/mongoid.yml')
 Oj.default_options = { mode: :compat }
 
 require 'parser'
+require 'incoming_request'
 require 'body_processor'
 require 'blueprint'
 require 'request'
