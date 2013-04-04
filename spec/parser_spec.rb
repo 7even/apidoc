@@ -47,7 +47,7 @@ describe Parser do
     blueprint = @parser.parse(source)
     blueprint.should_not be_nil
     blueprint.should have(4).requests
-    blueprint.requests.first.contexts.first.request_body.should == Oj.dump(email: 'a@b.ru', password: 'secret')
+    blueprint.requests.first.contexts.first.request_body.should == { 'email' => 'a@b.ru', 'password' => 'secret' }
   end
   
   it "parses contexts with variables in response_body" do
@@ -55,7 +55,7 @@ describe Parser do
     source = File.read(path)
     
     blueprint = @parser.parse(source)
-    Oj.load(blueprint.requests.last.contexts.first.response_body)['id'].should == '#{id}'
+    blueprint.requests.last.contexts.first.response_body['id'].should == '#{id}'
   end
   
   it "parses contexts with multiple headers" do

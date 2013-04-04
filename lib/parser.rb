@@ -83,7 +83,7 @@ class Parser < Rly::Yacc
   end
   
   rule 'request_query_string : ">" QUERY_STRING' do |request_query_string, _, query_string|
-    request_query_string.value = { request_query_string: query_string.value }
+    request_query_string.value = { request_query_string: Rack::Utils.parse_nested_query(query_string.value) }
   end
   
   rule 'request_headers : request_headers_array' do |request_headers, request_headers_array|
@@ -129,7 +129,7 @@ class Parser < Rly::Yacc
   rule('empty :') { }
   
   rule 'json : json_object | json_array' do |json, object_or_array|
-    json.value = Oj.dump(object_or_array.value)
+    json.value = object_or_array.value
   end
   
   rule 'json_object : "{" json_key_value_pairs "}"' do |json_object, _, json_key_value_pairs, _|

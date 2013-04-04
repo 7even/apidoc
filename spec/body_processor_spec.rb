@@ -3,7 +3,10 @@ require 'spec_helper'
 describe BodyProcessor do
   describe ".process_for_rendering" do
     before(:each) do
-      @body = '{"id":"#{id}","email":"user@example.com"}'
+      @body = {
+        'id'    => '#{id}',
+        'email' => 'user@example.com'
+      }
     end
     
     it "returns prettified json with properly formatted variables" do
