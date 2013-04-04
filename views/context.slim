@@ -4,14 +4,14 @@
   
   pre
     - if context.has_request_query_string?
-      = "?#{context.request_query_string}\n"
+      = "?#{Formatter.format_query(context.request_query_string)}\n"
     
     - if context.has_request_headers?
       - context.request_headers.each do |header_name, header_value|
         = "#{header_name}: #{header_value}\n"
     
     - if context.has_request_body?
-      = "#{BodyProcessor.process_for_rendering(context.request_body)}\n"
+      = "#{Formatter.format_body(context.request_body)}\n"
 
 - if context.has_response_params?
   p
@@ -26,4 +26,4 @@
         = "#{header_name}: #{header_value}\n"
     
     - if context.has_response_body?
-      = "#{BodyProcessor.process_for_rendering(context.response_body)}\n"
+      = "#{Formatter.format_body(context.response_body)}\n"

@@ -12,7 +12,7 @@ Oj.default_options = { mode: :compat }
 
 require 'parser'
 require 'incoming_request'
-require 'body_processor'
+require 'formatter'
 require 'blueprint'
 require 'request'
 require 'context'
