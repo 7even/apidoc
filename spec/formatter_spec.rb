@@ -5,12 +5,13 @@ describe Formatter do
     before(:each) do
       @query_params = {
         'first_name' => 'John',
-        'last_name'  => 'Smith'
+        'last_name'  => 'Smith',
+        'interests'  => ['ruby', 'rails']
       }
     end
     
     it "returns a query string built from the params hash" do
-      Formatter.format_query(@query_params).should == 'first_name=John&last_name=Smith'
+      Formatter.format_query(@query_params).should == 'first_name=John&last_name=Smith&interests[]=ruby&interests[]=rails'
     end
   end
   

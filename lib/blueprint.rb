@@ -25,9 +25,9 @@ end
 #     verb
 #     url
 #     context:
-#       request_query_string
+#       request_query_params
 #       request_headers
-#       request_body
+#       request_body_params
 #       response_code
 #       response_headers
-#       response_body
+#       response_body_params

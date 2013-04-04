@@ -17,7 +17,8 @@ class Parser < Rly::Yacc
     end
     
     token :URL, /\/[A-Za-z0-9\-_\/.@:]+/
-    token :QUERY_STRING, /[A-Za-z0-9@.]+=[A-Za-z0-9@.]+(&[A-Za-z0-9@.]+=[A-Za-z0-9@.]+)*/ # param1=value1&param2=value2
+    # param1=value1&param2=value2&param3[]=value3&param3[]=value4
+    token :QUERY_STRING, /[A-Za-z0-9@.\[\]]+=[A-Za-z0-9@.]+(&[A-Za-z0-9@.\[\]]+=[A-Za-z0-9@.]+)*/
     token :STRING, /[A-Za-z0-9\-_\/.@]+/
     
     literals '><{}[],:#'
@@ -60,30 +61,30 @@ class Parser < Rly::Yacc
     context.value = Context.new(context_attributes)
   end
   
-  rule 'request_context : request_query_string request_headers request_body
-                        | request_query_string request_headers
-                        | request_query_string request_body
-                        | request_headers request_body
-                        | request_query_string
+  rule 'request_context : request_query_params request_headers request_body_params
+                        | request_query_params request_headers
+                        | request_query_params request_body_params
+                        | request_headers request_body_params
+                        | request_query_params
                         | request_headers
-                        | request_body
+                        | request_body_params
                         | empty' do |request_context, *request_context_parts|
     request_context.value = request_context_parts.map(&:value).compact.inject(:merge)
   end
   
-  rule 'response_context : response_code response_headers response_body
+  rule 'response_context : response_code response_headers response_body_params
                          | response_code response_headers
-                         | response_code response_body
-                         | response_headers response_body
+                         | response_code response_body_params
+                         | response_headers response_body_params
                          | response_code
                          | response_headers
-                         | response_body
+                         | response_body_params
                          | empty' do |response_context, *response_context_parts|
     response_context.value = response_context_parts.map(&:value).compact.inject(:merge)
   end
   
-  rule 'request_query_string : ">" QUERY_STRING' do |request_query_string, _, query_string|
-    request_query_string.value = { request_query_string: Rack::Utils.parse_nested_query(query_string.value) }
+  rule 'request_query_params : ">" QUERY_STRING' do |request_query_params, _, query_string|
+    request_query_params.value = { request_query_params: Rack::Utils.parse_nested_query(query_string.value) }
   end
   
   rule 'request_headers : request_headers_array' do |request_headers, request_headers_array|
@@ -98,8 +99,8 @@ class Parser < Rly::Yacc
     request_header.value = header.value
   end
   
-  rule 'request_body : ">" json' do |request_body, _, json|
-    request_body.value = { request_body: json.value }
+  rule 'request_body_params : ">" json' do |request_body_params, _, json|
+    request_body_params.value = { request_body_params: json.value }
   end
   
   rule 'response_code : "<" NUMBER' do |response_code, _, number|
@@ -118,8 +119,8 @@ class Parser < Rly::Yacc
     response_header.value = header.value
   end
   
-  rule 'response_body : "<" json' do |response_body, _, json|
-    response_body.value = { response_body: json.value }
+  rule 'response_body_params : "<" json' do |response_body_params, _, json|
+    response_body_params.value = { response_body_params: json.value }
   end
   
   rule 'header : STRING ":" STRING' do |header, header_name, _, header_value|

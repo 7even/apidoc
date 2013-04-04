@@ -3,15 +3,15 @@
     span.label.label-info Request
   
   pre
-    - if context.has_request_query_string?
-      = "?#{Formatter.format_query(context.request_query_string)}\n"
+    - if context.has_request_query_params?
+      = "?#{Formatter.format_query(context.request_query_params)}\n"
     
     - if context.has_request_headers?
       - context.request_headers.each do |header_name, header_value|
         = "#{header_name}: #{header_value}\n"
     
-    - if context.has_request_body?
-      = "#{Formatter.format_body(context.request_body)}\n"
+    - if context.has_request_body_params?
+      = "#{Formatter.format_body(context.request_body_params)}\n"
 
 - if context.has_response_params?
   p
@@ -25,5 +25,5 @@
       - context.response_headers.each do |header_name, header_value|
         = "#{header_name}: #{header_value}\n"
     
-    - if context.has_response_body?
-      = "#{Formatter.format_body(context.response_body)}\n"
+    - if context.has_response_body_params?
+      = "#{Formatter.format_body(context.response_body_params)}\n"

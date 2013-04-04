@@ -47,15 +47,15 @@ describe Parser do
     blueprint = @parser.parse(source)
     blueprint.should_not be_nil
     blueprint.should have(4).requests
-    blueprint.requests.first.contexts.first.request_body.should == { 'email' => 'a@b.ru', 'password' => 'secret' }
+    blueprint.requests.first.contexts.first.request_body_params.should == { 'email' => 'a@b.ru', 'password' => 'secret' }
   end
   
-  it "parses contexts with variables in response_body" do
+  it "parses contexts with variables in response body" do
     path = File.expand_path('../fixtures/simple', __FILE__)
     source = File.read(path)
     
     blueprint = @parser.parse(source)
-    blueprint.requests.last.contexts.first.response_body['id'].should == '#{id}'
+    blueprint.requests.last.contexts.first.response_body_params['id'].should == '#{id}'
   end
   
   it "parses contexts with multiple headers" do

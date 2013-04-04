@@ -1,7 +1,8 @@
 module Formatter
   class << self
     def format_query(query_params)
-      Faraday::Utils.build_nested_query(query_params)
+      query = Faraday::Utils.build_nested_query(query_params)
+      CGI.unescape(query)
     end
     
     def format_body(body_params)
