@@ -23,4 +23,21 @@ class Context
   def has_response_params?
     self.has_response_code? || self.has_response_headers? || self.has_response_body_params?
   end
+  
+  def matches?(request)
+    query_string_matches?(request) && headers_match?(request) && body_matches?(request)
+  end
+  
+private
+  def query_string_matches?(request)
+    self.request_query_params.nil? || request.query_string_matches?(self.request_query_params)
+  end
+  
+  def headers_match?(request)
+    self.request_headers.nil? || request.headers_match?(self.request_headers)
+  end
+  
+  def body_matches?(request)
+    self.request_body_params.nil? || request.body_matches?(self.request_body_params)
+  end
 end
