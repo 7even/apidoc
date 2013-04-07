@@ -10,7 +10,7 @@ describe Context do
       }
       c.request_body_params = { c: 3, d: 4 }
       
-      c.response_code = 200
+      c.response_code = 201
       c.response_headers = {
         'X-Third-Header'  => 'third_value',
         'X-Fourth-Header' => 'fourth_value'
@@ -37,6 +37,23 @@ describe Context do
         @incoming_request.should_receive(:query_string_matches?).with(@context.request_query_params).and_return(false)
         @context.matches?(@incoming_request).should be_false
       end
+    end
+  end
+  
+  describe "#apply" do
+    before(:each) do
+      @response = Struct.new(:status, :headers, :body).new(200, {}, [])
+    end
+    
+    it "applies response params to the given response" do
+      @context.apply(@response)
+      
+      @response.status.should == @context.response_code
+      @context.response_headers.each do |header_name, header_value|
+        @response.headers[header_name].should == header_value
+      end
+      response_body = Oj.dump(@context.response_body_params)
+      @response.body.should include(response_body)
     end
   end
 end

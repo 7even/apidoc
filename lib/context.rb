@@ -28,6 +28,16 @@ class Context
     query_string_matches?(request) && headers_match?(request) && body_matches?(request)
   end
   
+  def apply(response)
+    response.status = self.response_code if self.has_response_code?
+    
+    self.response_headers.each do |header_name, header_value|
+      response.headers[header_name] = header_value
+    end if self.has_response_headers?
+    
+    response.body << Oj.dump(self.response_body_params) if self.has_response_body_params?
+  end
+  
 private
   def query_string_matches?(request)
     self.request_query_params.nil? || request.query_string_matches?(self.request_query_params)
