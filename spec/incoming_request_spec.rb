@@ -6,6 +6,58 @@ describe IncomingRequest do
     @incoming_request = IncomingRequest.new(@rack_request)
   end
   
+  describe "#verb_matches?" do
+    before(:each) do
+      @verb = 'GET'
+    end
+    
+    context "with a matching verb" do
+      before(:each) do
+        @rack_request.stub(:request_method).and_return('GET')
+      end
+      
+      it "returns true" do
+        @incoming_request.verb_matches?(@verb).should be_true
+      end
+    end
+    
+    context "with another verb" do
+      before(:each) do
+        @rack_request.stub(:request_method).and_return('POST')
+      end
+      
+      it "returns false" do
+        @incoming_request.verb_matches?(@verb).should be_false
+      end
+    end
+  end
+  
+  describe "#url_matches?" do
+    before(:each) do
+      @url = '/users'
+    end
+    
+    context "with a matching url" do
+      before(:each) do
+        @rack_request.stub(:path_info).and_return('/users')
+      end
+      
+      it "returns true" do
+        @incoming_request.url_matches?(@url).should be_true
+      end
+    end
+    
+    context "with another url" do
+      before(:each) do
+        @rack_request.stub(:path_info).and_return('/posts')
+      end
+      
+      it "returns false" do
+        @incoming_request.url_matches?(@url).should be_false
+      end
+    end
+  end
+  
   describe "#query_string_matches?" do
     before(:each) do
       @params = { x: 1 } # params from specification

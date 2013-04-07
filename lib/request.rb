@@ -10,4 +10,8 @@ class Request
   def caption
     "#{verb} #{url}" # GET /users
   end
+  
+  def matches?(incoming_request)
+    incoming_request.verb_matches?(self.verb) && incoming_request.url_matches?(self.url)
+  end
 end
