@@ -5,6 +5,22 @@ class Blueprint
   
   embeds_many :requests
   
+  def process(request, response)
+    incoming_request = IncomingRequest.new(request)
+    
+    request_specification = self.requests.detect do |r|
+      r.matches?(incoming_request)
+    end
+    
+    if request_specification
+      context_specification = request_specification.contexts.detect do |context|
+        context.matches?(incoming_request)
+      end
+    end
+    
+    context_specification && context_specification.apply(response)
+  end
+  
   class << self
     def parse(specification)
       blueprint = Parser.new.parse(specification)

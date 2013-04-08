@@ -2,4 +2,4 @@
 
 HTTP API documentation and mocking tool. Heavily inspired by [apiary.io](http://apiary.io).
 
-Currently on an early stage of development.
+Currently in development.
