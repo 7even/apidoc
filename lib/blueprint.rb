@@ -18,7 +18,10 @@ class Blueprint
       end
     end
     
-    context_specification && context_specification.apply(response)
+    if context_specification
+      context_specification.apply(response)
+      true # always return a truthy value after successfully finding a matching context
+    end
   end
   
   class << self

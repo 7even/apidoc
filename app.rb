@@ -1,11 +1,13 @@
 require_relative 'init'
 
 subdomain :api do
-  get '*' do
-    if @current_blueprint = Blueprint.current
-      @current_blueprint.process(request, response) or halt 404, 'Request doesn\'t match the specification'
-    else
-      halt 404, 'Specification missing'
+  [:get, :post, :put, :patch, :delete].each do |verb|
+    send(verb, '*') do
+      if @current_blueprint = Blueprint.current
+        @current_blueprint.process(request, response) or halt 404, 'Request doesn\'t match the specification'
+      else
+        halt 404, 'Specification missing'
+      end
     end
   end
 end
