@@ -8,7 +8,9 @@ class IncomingRequest
   end
   
   def url_matches?(url)
-    @rack_request.path_info == url
+    # /users/:id => %r(/users/[A-Za-z0-9_]+)
+    pattern = url.gsub(/:[a-z0-9_]+/, '[A-Za-z0-9_]+')
+    Regexp.new(pattern) =~ @rack_request.path_info
   end
   
   def query_string_matches?(query_params)

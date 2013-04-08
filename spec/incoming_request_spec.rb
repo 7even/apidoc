@@ -33,27 +33,55 @@ describe IncomingRequest do
   end
   
   describe "#url_matches?" do
-    before(:each) do
-      @url = '/users'
-    end
-    
-    context "with a matching url" do
+    context "with a common url" do
       before(:each) do
-        @rack_request.stub(:path_info).and_return('/users')
+        @url = '/users'
       end
       
-      it "returns true" do
-        @incoming_request.url_matches?(@url).should be_true
+      context "matching the specification" do
+        before(:each) do
+          @rack_request.stub(:path_info).and_return('/users')
+        end
+        
+        it "returns true" do
+          @incoming_request.url_matches?(@url).should be_true
+        end
+      end
+      
+      context "missing the specification" do
+        before(:each) do
+          @rack_request.stub(:path_info).and_return('/posts')
+        end
+        
+        it "returns false" do
+          @incoming_request.url_matches?(@url).should be_false
+        end
       end
     end
     
-    context "with another url" do
+    context "with a url containing variables" do
       before(:each) do
-        @rack_request.stub(:path_info).and_return('/posts')
+        @url = '/users/:id'
       end
       
-      it "returns false" do
-        @incoming_request.url_matches?(@url).should be_false
+      context "matching the specification" do
+        before(:each) do
+          @rack_request.stub(:path_info).and_return('/users/1')
+        end
+        
+        it "returns true" do
+          @incoming_request.url_matches?(@url).should be_true
+        end
+      end
+      
+      context "missing the specification" do
+        before(:each) do
+          @rack_request.stub(:path_info).and_return('/posts/:id')
+        end
+        
+        it "returns false" do
+          @incoming_request.url_matches?(@url).should be_false
+        end
       end
     end
   end
