@@ -24,6 +24,10 @@ class Blueprint
     end
   end
   
+  def reparse
+    Blueprint.parse(self.specification)
+  end
+  
   class << self
     def parse(specification)
       blueprint = Parser.new.parse(specification)
