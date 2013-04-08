@@ -8,9 +8,13 @@ class IncomingRequest
   end
   
   def url_matches?(url)
-    # /users/:id => %r(/users/[A-Za-z0-9_]+)
-    pattern = url.gsub(/:[a-z0-9_]+/, '[A-Za-z0-9_]+')
-    Regexp.new(pattern) =~ @rack_request.path_info
+    !!url_params(url)
+  end
+  
+  def url_params(url)
+    pattern = IncomingRequest.pattern_from_url(url)
+    match = Regexp.new(pattern).match(@rack_request.path_info)
+    Hash[match.names.zip(match.captures)] if match
   end
   
   def query_string_matches?(query_params)
@@ -30,6 +34,10 @@ class IncomingRequest
     body_params.keys.all? do |param_name|
       form_hash.has_key?(param_name.to_s)
     end
+  end
+  
+  def self.pattern_from_url(url)
+    url.gsub(/:([a-z0-9_]+)/, '(?<\1>[A-Za-z0-9_]+)')
   end
   
 private

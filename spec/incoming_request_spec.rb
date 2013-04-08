@@ -86,6 +86,23 @@ describe IncomingRequest do
     end
   end
   
+  describe "#url_params" do
+    before(:each) do
+      @url = '/users/:id'
+      @rack_request.stub(:path_info).and_return('/users/1')
+    end
+    
+    it "returns a hash with url variables" do
+      @incoming_request.url_params(@url).should == { 'id' => '1' }
+    end
+  end
+  
+  describe ".pattern_from_url" do
+    it "replaces variables with named groups" do
+      IncomingRequest.pattern_from_url('/users/:id').should == '/users/(?<id>[A-Za-z0-9_]+)'
+    end
+  end
+  
   describe "#query_string_matches?" do
     before(:each) do
       @params = { x: 1 } # params from specification
