@@ -55,5 +55,50 @@ describe Context do
       response_body = Oj.dump(@context.response_body_params)
       @response.body.should include(response_body)
     end
+    
+    context "with params from the url" do
+      before(:each) do
+        @context.response_body_params = {
+          id:   '#{id}',
+          name: 'John Smith'
+        }
+      end
+      
+      it "replaces the variables with corresponding params" do
+        @context.apply(@response, params: { 'id' => '1' })
+        
+        json = Oj.dump(
+          id:   '1',
+          name: 'John Smith'
+        )
+        @response.body.should include(json)
+      end
+    end
+  end
+  
+  describe ".deep_replace" do
+    before(:each) do
+      @hash = {
+        id:   '#{id}',
+        name: 'John Smith',
+        posts: [
+          { id: 1, title: 'Hello', user_id: '#{id}' },
+          { id: 2, title: 'Goodbye', user_id: '#{id}' }
+        ]
+      }
+    end
+    
+    it "replaces variables on any nesting level" do
+      Context.deep_replace(@hash, replaces: { '#{id}' => '1' })
+      
+      @hash.should == {
+        id: '1',
+        name: 'John Smith',
+        posts: [
+          { id: 1, title: 'Hello', user_id: '1' },
+          { id: 2, title: 'Goodbye', user_id: '1' }
+        ]
+      }
+    end
   end
 end

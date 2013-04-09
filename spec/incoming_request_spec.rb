@@ -99,7 +99,7 @@ describe IncomingRequest do
   
   describe ".pattern_from_url" do
     it "replaces variables with named groups" do
-      IncomingRequest.pattern_from_url('/users/:id').should == '/users/(?<id>[A-Za-z0-9_]+)'
+      IncomingRequest.pattern_from_url('/users/:id').should == '\A/users/(?<id>[A-Za-z0-9_]+)\Z'
     end
   end
   

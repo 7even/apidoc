@@ -37,7 +37,7 @@ class IncomingRequest
   end
   
   def self.pattern_from_url(url)
-    url.gsub(/:([a-z0-9_]+)/, '(?<\1>[A-Za-z0-9_]+)')
+    '\A' + url.gsub(/:([a-z0-9_]+)/, '(?<\1>[A-Za-z0-9_]+)') + '\Z'
   end
   
 private

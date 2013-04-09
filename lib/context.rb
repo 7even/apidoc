@@ -28,14 +28,42 @@ class Context
     query_string_matches?(request) && headers_match?(request) && body_matches?(request)
   end
   
-  def apply(response)
+  def apply(response, params: {})
     response.status = self.response_code if self.has_response_code?
     
     self.response_headers.each do |header_name, header_value|
       response.headers[header_name] = header_value
     end if self.has_response_headers?
     
-    response.body << Oj.dump(self.response_body_params) if self.has_response_body_params?
+    if self.has_response_body_params?
+      body = Oj.dump(self.response_body_params)
+      
+      params = params.inject({}) do |hash, (key, value)|
+        key = '#{' + key + '}'
+        hash[key] = value # hash['#{id}'] = 1
+        hash
+      end
+      
+      Context.deep_replace(body, replaces: params)
+      response.body << body
+    end
+  end
+  
+  def self.deep_replace(struct, replaces: {})
+    case struct
+    when Hash
+      struct.values.each do |value|
+        deep_replace(value, replaces: replaces)
+      end
+    when Array
+      struct.each do |value|
+        deep_replace(value, replaces: replaces)
+      end
+    when String
+      replaces.each do |from, to|
+        struct.gsub!(from, to)
+      end
+    end
   end
   
 private

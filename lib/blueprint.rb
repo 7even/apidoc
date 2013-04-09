@@ -19,7 +19,8 @@ class Blueprint
     end
     
     if context_specification
-      context_specification.apply(response)
+      url_params = incoming_request.url_params(request_specification.url)
+      context_specification.apply(response, params: url_params)
       true # always return a truthy value after successfully finding a matching context
     end
   end
