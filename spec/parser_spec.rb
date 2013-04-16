@@ -50,6 +50,19 @@ describe Parser do
     blueprint.requests.first.contexts.first.request_body_params.should == { 'email' => 'a@b.ru', 'password' => 'secret' }
   end
   
+  it "parses contexts with headers followed by body" do
+    source = <<-EOF
+      GET /url
+      > X-My-Header: my_value
+      > { "param": "value" }
+      < 302
+    EOF
+    
+    blueprint = @parser.parse(source)
+    blueprint.should_not be_nil
+    blueprint.requests.first.contexts.first.should have_request_headers
+  end
+  
   it "parses contexts with variables in response body" do
     path = File.expand_path('../fixtures/simple', __FILE__)
     source = File.read(path)

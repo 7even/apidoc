@@ -87,16 +87,18 @@ class Parser < Rly::Yacc
     request_query_params.value = { request_query_params: Rack::Utils.parse_nested_query(query_string.value) }
   end
   
-  rule 'request_headers : request_headers_array' do |request_headers, request_headers_array|
-    request_headers.value = { request_headers: request_headers_array.value }
+  rule 'request_headers : request_header' do |request_headers, request_header|
+    request_headers.value = request_header.value
   end
   
-  rule 'request_headers_array : request_headers_array request_header | request_header' do |request_headers_array, *headers_array|
-    request_headers_array.value = headers_array.map(&:value).inject(:merge)
+  rule 'request_headers : request_headers request_header' do |request_headers, *headers_array|
+    request_headers.value = {
+      request_headers: headers_array.map { |h| h.value[:request_headers] }.flatten.inject(&:merge)
+    }
   end
   
   rule 'request_header : ">" header' do |request_header, _, header|
-    request_header.value = header.value
+    request_header.value = { request_headers: header.value }
   end
   
   rule 'request_body_params : ">" json' do |request_body_params, _, json|
@@ -107,16 +109,18 @@ class Parser < Rly::Yacc
     response_code.value = { response_code: number.value }
   end
   
-  rule 'response_headers : response_headers_array' do |response_headers, response_headers_array|
-    response_headers.value = { response_headers: response_headers_array.value }
+  rule 'response_headers : response_header' do |response_headers, response_header|
+    response_headers.value = response_header.value
   end
   
-  rule 'response_headers_array : response_headers_array response_header | response_header' do |response_headers_array, *headers_array|
-    response_headers_array.value = headers_array.map(&:value).inject(:merge)
+  rule 'response_headers : response_headers response_header' do |response_headers, *headers_array|
+    response_headers.value = {
+      response_headers: headers_array.map { |h| h.value[:response_headers] }.flatten.inject(&:merge)
+    }
   end
   
   rule 'response_header : "<" header' do |response_header, _, header|
-    response_header.value = header.value
+    response_header.value = { response_headers: header.value }
   end
   
   rule 'response_body_params : "<" json' do |response_body_params, _, json|
